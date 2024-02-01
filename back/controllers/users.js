@@ -1,4 +1,4 @@
-import users from '../models/users'
+import users from '../models/users.js'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 
