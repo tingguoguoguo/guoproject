@@ -1,6 +1,17 @@
 <template>
   <!-- 手機板側欄 -->
-  <v-navigation-drawer v-model="drawer" temporary location="left" v-if="isMobile"></v-navigation-drawer>
+  <v-navigation-drawer v-model="drawer" temporary location="left" v-if="isMobile">
+    <v-list nav>
+      <template v-for="item in navItems" :key="item.to">
+        <v-list-item :to="item.to">
+          <template #prepend>
+            <v-icon :icon="item.icon"></v-icon>
+          </template>
+          <v-list-item-title>{{ item.text }}</v-list-item-title>
+        </v-list-item>
+      </template>
+    </v-list>
+  </v-navigation-drawer>
   <!-- 導覽列 -->
   <v-app-bar color="primary">
     <v-container class="d-flex align-center">
@@ -22,9 +33,13 @@
       </template>
     </v-container>
   </v-app-bar>
-  <v-banner class="my-banner pa-0">
-      <v-img src="../assets/banner.png" alt="Banner Image" style="margin-top:60px;"></v-img>
-  </v-banner>
+  <!-- 頁面內容 -->
+  <v-main>
+    <v-banner class="my-banner pa-0">
+      <v-img src="../assets/banner.png" alt="Banner Image"></v-img>
+    </v-banner>
+    <router-view></router-view>
+  </v-main>
 </template>
 
 <script setup>
