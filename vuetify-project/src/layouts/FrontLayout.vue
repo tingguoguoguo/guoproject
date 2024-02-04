@@ -35,7 +35,7 @@
   </v-app-bar>
   <!-- 頁面內容 -->
   <v-main>
-    <v-banner class="my-banner pa-0">
+    <v-banner class="my-banner pa-0 bottom-shadow">
       <v-img src="../assets/banner.png" alt="Banner Image"></v-img>
     </v-banner>
     <router-view></router-view>
@@ -63,5 +63,8 @@ const navItems = [
 <style scoped>
 .my-banner{
   border-bottom: none;
+}
+.bottom-shadow{
+  box-shadow:0 6px 4px rgba(0,0,0,0.2)
 }
 </style>
