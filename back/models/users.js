@@ -11,7 +11,8 @@ const favdiarySchema = new Schema({
   },
   diaries: [{
     type: ObjectId,
-    ref: 'Diary'
+    ref: 'diary',
+    required: [true, '缺少收藏日記']
   }]
 })
 
@@ -19,7 +20,7 @@ const schema = new Schema({
   account: {
     type: String,
     required: [true, '缺少使用者帳號'],
-    minlength: [4, '帳號最少4個字'],
+    minlength: [4, '帳號至少4個字'],
     maxlength: [20, '帳號最多20個字'],
     unique: [true, '帳號已被註冊'],
     validate: {

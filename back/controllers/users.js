@@ -36,14 +36,14 @@ export const login = async (req, res) => {
     const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7 days' })
     req.user.tokens.push(token)
 
-    // 在儲存使用者之前，取得收藏夾和日記的資訊
-    await req.user.populate('favdiary.diaries').execPopulate()
+    // // 在儲存使用者之前，取得收藏夾和日記的資訊
+    // await req.user.populate('favdiary.diaries').execPopulate()
 
-    // 將收藏夾的資訊添加到響應中
-    const favdiary = req.user.favdiary.map(favdiary => ({
-      name: favdiary.name,
-      diaries: favdiary.diaries // 這將包含每個收藏夾的日記資訊
-    }))
+    // // 將收藏夾的資訊添加到響應中
+    // const favdiary = req.user.favdiary.map(favdiary => ({
+    //   name: favdiary.name,
+    //   diaries: favdiary.diaries // 這將包含每個收藏夾的日記資訊
+    // }))
 
     await req.user.save()
     res.status(StatusCodes.OK).json({
@@ -53,8 +53,8 @@ export const login = async (req, res) => {
         token,
         account: req.user.account,
         email: req.user.email,
-        role: req.user.role,
-        favdiary // 使用新的 favdiary 變數
+        role: req.user.role
+        // favdiary // 使用新的 favdiary 變數
       }
     })
   } catch (error) {
