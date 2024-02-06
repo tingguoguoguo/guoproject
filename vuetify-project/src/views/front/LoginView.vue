@@ -19,12 +19,16 @@
 <script setup>
 import { useForm, useField } from 'vee-validate'
 import * as yup from 'yup'
-import { api } from '@/plugins/axios'
 import { useRouter } from 'vue-router'
 import { useSnackbar } from 'vuetify-use-dialog'
+import { useApi } from '@/composables/axios'
+import { useUserStore } from '@/store/user'
+
+const { api } = useApi()
 
 const router = useRouter()
 const createSnackbar = useSnackbar()
+const { user } = useUserStore()
 
 // 定義註冊表單的資料格式
 const schema = yup.object({
@@ -47,12 +51,14 @@ const { handleSubmit, isSubmitting } = useForm({
 const account = useField('account')
 const password = useField('password')
 
-const submit = handleSubmit(async (values) => {
+const submit = handleSubmit(async (values) => { // values為表單的資料
   try {
-    await api.post('/users/login', {
-      account: values.account,
+    // 把後端回傳的資料存到data
+    const { data } = await api.post('/users/login', {
+      account: values.account, // 把表單的帳號密碼傳到後端驗證，並且存到data
       password: values.password
     })
+    user.login(data) // 將後端回傳的資料（可能包含使用者資訊或登入 token）存到 user store
     createSnackbar({
       text: '登入成功',
       showCloseButton: false,

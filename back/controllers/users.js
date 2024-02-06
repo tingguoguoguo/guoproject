@@ -2,6 +2,7 @@ import users from '../models/users.js'
 import { StatusCodes } from 'http-status-codes'
 import jwt from 'jsonwebtoken'
 
+// 註冊
 export const create = async (req, res) => {
   try {
     await users.create(req.body)
@@ -31,6 +32,7 @@ export const create = async (req, res) => {
   }
 }
 
+// 登入，給一組token
 export const login = async (req, res) => {
   try {
     const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7 days' })
@@ -55,6 +57,64 @@ export const login = async (req, res) => {
         email: req.user.email,
         role: req.user.role
         // favdiary // 使用新的 favdiary 變數
+      }
+    })
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: '未知錯誤'
+    })
+  }
+}
+
+// 登出，刪除token
+export const logout = async (req, res) => {
+  try {
+    req.user.tokens = req.user.tokens.filter(token => token !== req.token)
+    await req.user.save()
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: ''
+    })
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: '未知錯誤'
+    })
+  }
+}
+
+// token到期，給一組新的token
+export const extend = async (req, res) => {
+  try {
+    const idx = req.user.tokens.findIndex(token => token === req.token)
+    const token = jwt.sign({ _id: req.user._id }, process.env.JWT_SECRET, { expiresIn: '7 days' })
+    req.user.tokens[idx] = token
+    await req.user.save()
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: '',
+      result: token
+    })
+  } catch (error) {
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
+      success: false,
+      message: '未知錯誤'
+    })
+  }
+}
+
+export const getProfile = async (req, res) => {
+  try {
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: '',
+      result: {
+        account: req.user.account,
+        email: req.user.email,
+        role: req.user.role
+        // favdiary // 使用新的 favdiary 變數
+
       }
     })
   } catch (error) {
