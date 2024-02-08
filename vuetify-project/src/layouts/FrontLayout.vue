@@ -3,7 +3,7 @@
   <v-navigation-drawer v-model="drawer" temporary location="left" v-if="isMobile">
     <v-list nav>
       <template v-for="item in navItems" :key="item.to">
-        <v-list-item :to="item.to">
+        <v-list-item :to="item.to" v-if="item.show">
           <template #prepend>
             <v-icon :icon="item.icon"></v-icon>
           </template>
@@ -26,7 +26,7 @@
       <!-- 電腦板導覽列 -->
       <template v-else>
         <template v-for="item in navItems" :key="item.to" >
-          <v-btn :to="item.to" :prepend-icon="item.icon">
+          <v-btn :to="item.to" :prepend-icon="item.icon" v-if="item.show">
             {{ item.text }}
           </v-btn>
         </template>
@@ -45,6 +45,9 @@
 <script setup>
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
+import { useUserStore } from '@/store/user'
+
+const user = useUserStore()
 
 // 手機版判斷
 const { mobile } = useDisplay()
@@ -53,11 +56,17 @@ const isMobile = computed(() => mobile.value)
 // 手機板側欄開關
 const drawer = ref(false)
 
-// 導覽列項目
-const navItems = [
-  { to: '/register', text: '註冊', icon: 'mdi-account-plus' },
-  { to: '/login', text: '登入', icon: 'mdi-login' }
-]
+// 導覽列項目，動態判斷是否為登入狀態
+const navItems = computed(() => {
+  return [
+    { to: '/about', text: '關於我們', icon: 'mdi-moon-waning-crescent', show: true },
+    { to: '/recommend', text: '推薦日記', icon: 'mdi-book-open-blank-variant', show: user.isLogin },
+    { to: '/personalpage', text: '個人頁面', icon: 'mdi-account-box', show: user.isLogin },
+    { to: '/register', text: '註冊', icon: 'mdi-account-plus', show: !user.isLogin },
+    { to: '/login', text: '登入', icon: 'mdi-login', show: !user.isLogin },
+    { to: '/admin', text: '管理', icon: 'mdi-account-eye-outline', show: user.isLogin && user.isAdmin }
+  ]
+})
 </script>
 
 <style scoped>

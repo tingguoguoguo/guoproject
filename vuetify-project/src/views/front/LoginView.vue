@@ -28,7 +28,7 @@ const { api } = useApi()
 
 const router = useRouter()
 const createSnackbar = useSnackbar()
-const { user } = useUserStore()
+const user = useUserStore()
 
 // 定義註冊表單的資料格式
 const schema = yup.object({
@@ -58,7 +58,7 @@ const submit = handleSubmit(async (values) => { // values為表單的資料
       account: values.account, // 把表單的帳號密碼傳到後端驗證，並且存到data
       password: values.password
     })
-    user.login(data) // 將後端回傳的資料（可能包含使用者資訊或登入 token）存到 user store
+    user.login(data.result) // 將後端回傳的資料（可能包含使用者資訊或登入 token）存到 user store
     createSnackbar({
       text: '登入成功',
       showCloseButton: false,
@@ -70,6 +70,7 @@ const submit = handleSubmit(async (values) => { // values為表單的資料
     })
     router.push('/')
   } catch (error) {
+    console.log(error)
     const text = error?.response?.data?.message || '發生錯誤，請稍後再試'
     createSnackbar({
       text,
