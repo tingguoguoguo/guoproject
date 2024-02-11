@@ -1,5 +1,5 @@
 // Composables
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory, START_LOCATION } from 'vue-router'
 import { useUserStore } from '@/store/user'
 
 const routes = [
@@ -38,6 +38,21 @@ const routes = [
         }
       }
     ]
+  }, {
+    path: '/admin',
+    component: () => import('@/layouts/AdminLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'AdminHome',
+        component: () => import('@/views/admin/HomeView.vue'),
+        meta: {
+          title: 'Day My Days | 管理',
+          login: true,
+          admin: true
+        }
+      }
+    ]
   }
 ]
 
@@ -54,6 +69,10 @@ router.afterEach((to, from) => {
 // 進去每個頁面前的判斷
 router.beforeEach(async (to, from, next) => {
   const user = useUserStore()
+
+  if (from === START_LOCATION) { // START_LOCATION代表路由第一次導向
+    await user.getProfile()
+  }
 
   if (user.isLogin && ['/register', '/login'].includes(to.path)) {
     // 如果有登入，要去註冊或登入頁，重新導向回首頁

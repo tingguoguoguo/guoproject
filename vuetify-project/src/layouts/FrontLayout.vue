@@ -10,6 +10,12 @@
           <v-list-item-title>{{ item.text }}</v-list-item-title>
         </v-list-item>
       </template>
+      <v-list-item v-if="user.isLogin" @click="logout">
+        <template #prepend>
+          <v-icon icon="mdi-logout"></v-icon>
+        </template>
+        <v-list-item-title>登出</v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-navigation-drawer>
   <!-- 導覽列 -->
@@ -30,6 +36,7 @@
             {{ item.text }}
           </v-btn>
         </template>
+        <v-btn prepend-icon="mdi-logout" v-if="user.isLogin" @click="logout">登出</v-btn>
       </template>
     </v-container>
   </v-app-bar>
@@ -46,7 +53,13 @@
 import { useDisplay } from 'vuetify'
 import { ref, computed } from 'vue'
 import { useUserStore } from '@/store/user'
+import { useApi } from '@/composables/axios'
+import { useSnackbar } from 'vuetify-use-dialog'
+import { useRouter } from 'vue-router'
 
+const { apiAuth } = useApi()
+const router = useRouter()
+const createSnackbar = useSnackbar()
 const user = useUserStore()
 
 // 手機版判斷
@@ -67,6 +80,34 @@ const navItems = computed(() => {
     { to: '/admin', text: '管理', icon: 'mdi-account-eye-outline', show: user.isLogin && user.isAdmin }
   ]
 })
+
+const logout = async () => {
+  try {
+    await apiAuth.delete('/users/logout')
+    user.logout()
+    createSnackbar({
+      text: '登出成功',
+      showCloseButton: false,
+      snackbarProps: {
+        timeout: 2000,
+        color: 'green',
+        location: 'bottom'
+      }
+    })
+    router.push('/')
+  } catch (error) {
+    const text = error?.response?.data?.message || '發生錯誤，請稍後再試'
+    createSnackbar({
+      text,
+      showCloseButton: false,
+      snackbarProps: {
+        timeout: 2000,
+        color: 'red',
+        location: 'bottom'
+      }
+    })
+  }
+}
 </script>
 
 <style scoped>

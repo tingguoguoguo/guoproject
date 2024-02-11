@@ -17,7 +17,9 @@ export const useUserStore = defineStore('user', () => {
 
   // 把使用者登入後的資料存到ref的function
   const login = (data) => {
-    token.value = data.token
+    if (data.token) {
+      token.value = data.token
+    }
     account.value = data.account
     email.value = data.email
     role.value = data.role
@@ -58,6 +60,7 @@ export const useUserStore = defineStore('user', () => {
     email,
     role,
     login,
+    logout,
     isLogin,
     isAdmin,
     getProfile
